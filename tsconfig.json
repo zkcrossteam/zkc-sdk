@@ -1,0 +1,13 @@
+{
+  "compilerOptions": {
+    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "noUnusedParameters": true,
+    "noUnusedLocals": true,
+    "strict": true,
+    "strictNullChecks": true,
+    "target": "ES5"
+  },
+  "include": ["src"]
+}

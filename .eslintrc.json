@@ -1,0 +1,11 @@
+{
+  "plugins": ["simple-import-sort"],
+  "parserOptions": {
+    "ecmaVersion": 2015,
+    "sourceType": "module"
+  },
+  "rules": {
+    "simple-import-sort/exports": "error",
+    "simple-import-sort/imports": "error"
+  }
+}
