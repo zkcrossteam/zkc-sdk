@@ -1,0 +1,49 @@
+{
+  "name": "zkc-sdk",
+  "version": "0.0.1",
+  "license": "ISC",
+  "author": "zkcrossteam",
+  "description": "zkc-sdk",
+  "keywords": [
+    "sdk"
+  ],
+  "homepage": "https://github.com/zkcrossteam/ZKC-SDK#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/zkcrossteam/ZKC-SDK.git"
+  },
+  "bugs": {
+    "url": "https://github.com/zkcrossteam/ZKC-SDK/issues"
+  },
+  "source": "src/index.ts",
+  "types": "dist/index.d.ts",
+  "main": "dist/index.js",
+  "module": "dist/index.esm.js",
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "none",
+    "arrowParens": "avoid"
+  },
+  "lint-staged": {
+    "*.{html,md,less,json,yml,js,ts,tsx}": "prettier --write",
+    "*.{js,jsx,ts,tsx}": "eslint --fix"
+  },
+  "scripts": {
+    "prepare": "husky install",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "lint-staged",
+    "build": "rimraf dist && parcel build"
+  },
+  "devDependencies": {
+    "@parcel/packager-ts": "~2.9.3",
+    "@parcel/transformer-typescript-types": "~2.9.3",
+    "eslint": "^8.43.0",
+    "eslint-plugin-simple-import-sort": "^10.0.0",
+    "husky": "^8.0.3",
+    "lint-staged": "^13.2.2",
+    "parcel": "~2.9.3",
+    "prettier": "^2.8.8",
+    "rimraf": "^5.0.1",
+    "typescript": "~5.1.3"
+  }
+}
