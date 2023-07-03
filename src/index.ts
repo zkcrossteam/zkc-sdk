@@ -1,3 +1,1 @@
-export const hello = () => {
-  console.log('Hi');
-};
+export * from './web3';
