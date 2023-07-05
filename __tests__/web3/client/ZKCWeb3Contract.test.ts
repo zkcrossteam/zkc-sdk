@@ -1,16 +1,13 @@
 import { Provider } from '@ethersproject/abstract-provider';
-import { faker } from '@faker-js/faker';
 import { constants, Contract, ContractInterface, Signer } from 'ethers';
 
 import { ZKCWeb3Contract } from '../../../src';
+import { fakerAddressFn, fakerBlockNumFn } from '../../common/faker';
 
-const fakerAddress = faker.string.hexadecimal({ length: 40, prefix: '0x' });
+const fakerAddress = fakerAddressFn();
 const fakerAbi = ['function name() view returns (string)'];
 const fakerEvent = 'hi';
-const fakerBlockNum = faker.number.int({
-  min: 1000000000,
-  max: 9999999999
-});
+const fakerBlockNum = fakerBlockNumFn();
 
 const contractConstructor = jest.fn(
   (
