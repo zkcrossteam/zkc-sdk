@@ -29,6 +29,7 @@
     "*.{js,jsx,ts,tsx}": "eslint --fix"
   },
   "dependencies": {
+    "@metamask/providers": "^11.1.0",
     "ethers": "^5.7.2"
   },
   "devDependencies": {
@@ -43,6 +44,7 @@
     "@typescript-eslint/parser": "^5.60.1",
     "eslint": "^8.43.0",
     "eslint-plugin-simple-import-sort": "^10.0.0",
+    "eth-rpc-errors": "^4.0.3",
     "husky": "^8.0.3",
     "jest": "^29.5.0",
     "jest-environment-jsdom": "^29.5.0",
@@ -61,7 +63,7 @@
     "build": "rimraf dist && parcel build",
     "build:docs": "rimraf docs && typedoc src/index.ts",
     "test": "jest",
-    "test:coverage": "jest --coverage",
+    "test:coverage": "rimraf coverage && jest --coverage",
     "prepublishOnly": "npm test && npm run build && npm run build:docs"
   }
 }
