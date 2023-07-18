@@ -30,7 +30,9 @@
   },
   "dependencies": {
     "@metamask/providers": "^11.1.0",
-    "ethers": "^5.7.2"
+    "ethers": "^5.7.2",
+    "koajax": "^0.8.4",
+    "web-utility": "^4.0.0"
   },
   "devDependencies": {
     "@ethersproject/abstract-provider": "^5.7.0",
