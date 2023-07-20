@@ -1,24 +1,20 @@
 {
   "name": "zkc-sdk",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "license": "ISC",
   "author": "zkcrossteam",
   "description": "zkc-sdk",
   "keywords": [
     "sdk"
   ],
-  "homepage": "https://github.com/zkcrossteam/ZKC-SDK#readme",
-  "repository": {
-    "type": "git",
-    "url": "git+ssh://git@github.com/zkcrossteam/ZKC-SDK.git"
-  },
-  "bugs": {
-    "url": "https://github.com/zkcrossteam/ZKC-SDK/issues"
-  },
   "source": "src/index.ts",
   "types": "dist/index.d.ts",
   "main": "dist/index.js",
   "module": "dist/index.esm.js",
+  "files": [
+    "dist",
+    "package.json"
+  ],
   "prettier": {
     "singleQuote": true,
     "trailingComma": "none",
