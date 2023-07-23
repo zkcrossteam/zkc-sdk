@@ -13,6 +13,14 @@ export class ZKCEndpoint {
     this.client = new HTTPClient({ baseURI, responseType: 'json' });
   }
 
+  /**
+   * HTTP request function.
+   * @param method HTTP request method
+   * @param path HTTP request path
+   * @param body it is the request body when it is a POST request, and the request query when it is a GET request
+   * @param headers HTTP request headers
+   * @returns the data body of the response data
+   */
   async request<T>(
     method: EndpointMethod,
     path: string,

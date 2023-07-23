@@ -5,7 +5,8 @@ import {
   Contract,
   ContractInterface,
   providers,
-  Signer
+  Signer,
+  utils
 } from 'ethers';
 
 export interface ChainInfo {
@@ -331,6 +332,22 @@ export class ZKCWeb3MetaMaskProvider extends ZKCWeb3Provider {
    */
   getZKCWeb3JsonRpcSigner() {
     return new ZKCWeb3JsonRpcSigner(this.provider);
+  }
+
+  /**
+   * Signature
+   * @param message signature message
+   * @returns Signature certificate
+   */
+  async sign(message: string) {
+    const messageHexString = utils.hexlify(utils.toUtf8Bytes(message));
+
+    const account = await this.getZKCWeb3JsonRpcSigner().getAccount();
+
+    return this._externalProvider.request<string>({
+      method: 'personal_sign',
+      params: [messageHexString, account]
+    });
   }
 }
 
