@@ -25,7 +25,9 @@ const fakerNewChainInfo = {
   rpcUrls: [fakerURLFn()],
   blockExplorerUrls: [fakerURLFn()]
 };
-const fakerJsonRpcSigner = {} as providers.JsonRpcSigner;
+const fakerJsonRpcSigner = {
+  getAddress: async () => fakerAddress
+} as providers.JsonRpcSigner;
 
 const mockEthereumRequest = jest.fn();
 const fakerEthereum = {
@@ -304,5 +306,29 @@ describe('ZKCWeb3MetaMaskProvider class', () => {
     );
     expect(mockProviderGetSigner).toHaveBeenCalledTimes(1);
     expect(mockProviderGetSigner).toHaveBeenCalledWith();
+  });
+
+  describe('teat call sign()', () => {
+    it('oldChainId === newChainId', async () => {
+      const fakerSign = fakerAddressFn();
+
+      expect.assertions(6);
+
+      expect(mockProviderGetSigner).toHaveBeenCalledTimes(0);
+      expect(mockEthereumRequest).toHaveBeenCalledTimes(0);
+
+      mockProviderGetSigner.mockReturnValueOnce(fakerJsonRpcSigner);
+      mockEthereumRequest.mockResolvedValueOnce(fakerSign);
+
+      // "I have 100€"  --utf8ToHex-->  "0x49206861766520313030e282ac"
+      const signature = await zKCWeb3MetaMaskProvider.sign('I have 100€');
+      expect(mockEthereumRequest).toHaveBeenCalledWith({
+        method: 'personal_sign',
+        params: ['0x49206861766520313030e282ac', fakerAddress]
+      });
+      expect(signature).toBe(fakerSign);
+      expect(mockProviderGetSigner).toHaveBeenCalledTimes(1);
+      expect(mockEthereumRequest).toHaveBeenCalledTimes(1);
+    });
   });
 });

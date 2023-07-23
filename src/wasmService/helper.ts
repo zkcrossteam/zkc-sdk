@@ -16,12 +16,22 @@ export class ZKCWasmServiceHelper {
     this.endpoint = new ZKCWasmServiceEndpoint(baseURI);
   }
 
+  /**
+   * Request task list.
+   * @param query request parameter
+   * @returns task list
+   */
   loadTasks(query: Partial<LoadTasksQueryParams>) {
     return this.endpoint.invokeRequest<
       HelperRequestType<LoadTasksResultData[]>
     >(EndpointMethod.GET, `/tasks`, query);
   }
 
+  /**
+   * Add task request.
+   * @param task task information
+   * @returns task id and image id
+   */
   addProvingTask(task: WithSignature<AddProvingTaskParams>) {
     return this.endpoint.invokeRequest<AddProvingTaskResultData>(
       EndpointMethod.POST,
