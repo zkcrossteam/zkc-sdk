@@ -4,6 +4,8 @@ export type MD5Type = Record<'md5', string>;
 
 export type UserAddressType = Record<'user_address', string>;
 
+export type PageParameters = Record<'pageIndex' | 'pageSize', number>;
+
 export type PublicPrivateInputs = Record<
   'public_inputs' | 'private_inputs',
   string[]
@@ -12,8 +14,8 @@ export type PublicPrivateInputs = Record<
 export type WithSignature<T> = T & { signature: string };
 
 export type HelperRequestType<T> = {
-  data: T;
-  total: number;
+  list: T;
+  count: number;
 };
 
 export enum QueryParamsTaskStatusEnum {
@@ -36,26 +38,17 @@ export enum QueryParamsTaskTypeEnum {
 export type ProvingParams = UserAddressType & MD5Type & PublicPrivateInputs;
 
 export interface LoadTasksQueryParams
-  extends UserAddressType,
-    MD5Type,
-    Partial<Record<'stsrt' | 'total', number>> {
-  id: string;
-  tasktype: QueryParamsTaskTypeEnum;
-  taskstatus: QueryParamsTaskStatusEnum;
+  extends Partial<UserAddressType & MD5Type & PageParameters> {
+  tasktype?: QueryParamsTaskTypeEnum;
+  taskstatus?: QueryParamsTaskStatusEnum;
 }
 
 export interface LoadTasksResultData
   extends UserAddressType,
     PublicPrivateInputs,
     MD5Type,
-    Record<
-      | 'submit_time'
-      | 'process_started'
-      | 'process_finished'
-      | 'status_message'
-      | 'internal_message',
-      string
-    >,
+    Record<'submit_time' | 'process_started' | 'process_finished', string>,
+    Record<'status_message' | 'internal_message', string | null>,
     Record<'proof' | 'instances' | 'aux', number[]> {
   _id: {
     $oid: string;

@@ -70,7 +70,7 @@ describe('ZKCWasmServiceHelper class', () => {
       expect(mockServiceEndpointInvokeRequest).toHaveBeenCalledTimes(1);
       expect(mockServiceEndpointInvokeRequest).toHaveBeenCalledWith(
         EndpointMethod.GET,
-        `/tasks`,
+        `/task`,
         fakerQuery
       );
       expect(res).toEqual(fakerReturnValue);
@@ -97,7 +97,7 @@ describe('ZKCWasmServiceHelper class', () => {
       expect(mockServiceEndpointInvokeRequest).toHaveBeenCalledTimes(1);
       expect(mockServiceEndpointInvokeRequest).toHaveBeenCalledWith(
         EndpointMethod.GET,
-        `/tasks`,
+        `/task`,
         fakerQuery
       );
       expect(res).toEqual(fakerReturnValue);
@@ -126,7 +126,7 @@ describe('ZKCWasmServiceHelper class', () => {
     expect(mockServiceEndpointInvokeRequest).toHaveBeenCalledTimes(1);
     expect(mockServiceEndpointInvokeRequest).toHaveBeenCalledWith(
       EndpointMethod.POST,
-      `/prove`,
+      `/task/proof`,
       fakerBody
     );
     expect(res).toEqual(fakerReturnValue);
