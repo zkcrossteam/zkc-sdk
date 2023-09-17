@@ -21,10 +21,10 @@ export class ZKCWasmServiceHelper {
    * @param query request parameter
    * @returns task list
    */
-  loadTasks(query: Partial<LoadTasksQueryParams>) {
+  loadTasks(query: LoadTasksQueryParams) {
     return this.endpoint.invokeRequest<
       HelperRequestType<LoadTasksResultData[]>
-    >(EndpointMethod.GET, `/tasks`, query);
+    >(EndpointMethod.GET, `/task`, query);
   }
 
   /**
@@ -35,7 +35,7 @@ export class ZKCWasmServiceHelper {
   addProvingTask(task: WithSignature<AddProvingTaskParams>) {
     return this.endpoint.invokeRequest<AddProvingTaskResultData>(
       EndpointMethod.POST,
-      '/prove',
+      '/task/proof',
       task
     );
   }
