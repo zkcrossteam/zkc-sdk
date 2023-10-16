@@ -37,20 +37,10 @@ export const DEFAULT_IMPORT = {
 export const ZKCWasmServiceHelperBaseURI = 'https://rpc.zkcross.org';
 
 export class ZKCWasmServiceHelper {
-  client: HTTPClient<Context>;
+  client = new HTTPClient({ responseType: 'json' });
 
   constructor(public baseURI = ZKCWasmServiceHelperBaseURI) {
-    this.client = new HTTPClient({
-      baseURI: ZKCWasmServiceHelperBaseURI,
-      responseType: 'json'
-    }).use(async ({ request }, next) => {
-      try {
-        await next();
-      } catch (error) {
-        console.dir(error);
-        throw error;
-      }
-    });
+    this.client.baseURI = baseURI;
   }
 
   static async loadWasm(wasmFile: URL, importObject = DEFAULT_IMPORT) {
@@ -69,7 +59,7 @@ export class ZKCWasmServiceHelper {
 
   /**
    * Upload wasm file
-   * @param formData upload information
+   * @param applicationData upload information
    * @returns application detail
    */
   createApplication(applicationData: CreateApplicationParams) {

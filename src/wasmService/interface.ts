@@ -39,13 +39,12 @@ export enum TaskTypeEnum {
 }
 
 export type CreateTaskParams = UserAddressType & ZKCInputs & MD5Type;
-export type CreateApplicationParams = WithSignature<{
-  address: string;
-  data: File[];
-  name: string;
-  description: string;
-  chainList: number[];
-}>;
+export type CreateApplicationParams = WithSignature<
+  Record<'address' | 'name' | 'description', string> & {
+    data: File[];
+    chainList: number[];
+  }
+>;
 
 export interface TaskListQueryParams
   extends Partial<UserAddressType & MD5Type & PaginationParameters> {
