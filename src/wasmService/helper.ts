@@ -1,19 +1,69 @@
-import { EndpointMethod } from '../util';
-import { ZKCWasmServiceEndpoint } from './endpoint';
+import { buildURLData } from 'web-utility';
+import { Context, HTTPClient, makeFormData } from 'koajax';
+
 import {
-  AddProvingTaskParams,
-  AddProvingTaskResultData,
-  HelperRequestType,
-  LoadTasksQueryParams,
-  LoadTasksResultData,
-  WithSignature
+  CreateTaskParams,
+  TaskListQueryParams,
+  Task,
+  WithSignature,
+  ProofDetail,
+  CreateApplicationParams
 } from './interface';
 
-export class ZKCWasmServiceHelper {
-  public endpoint: ZKCWasmServiceEndpoint;
+export const { Memory, Table } = WebAssembly;
 
-  constructor(baseURI: string) {
-    this.endpoint = new ZKCWasmServiceEndpoint(baseURI);
+export const DEFAULT_IMPORT = {
+  global: {},
+  env: {
+    memory: new Memory({ initial: 10, maximum: 100 }),
+    table: new Table({ initial: 0, element: 'anyfunc' }),
+    abort: () => {
+      console.error('abort in wasm!');
+      throw new Error('Unsupported wasm api: abort');
+    },
+    require: (b: any) => {
+      if (!b) {
+        console.error('require failed');
+        throw new Error('Require failed');
+      }
+    },
+    wasm_input: () => {
+      console.error('wasm_input should not been called in non-zkwasm mode');
+      throw new Error('Unsupported wasm api: wasm_input');
+    }
+  }
+};
+
+export const ZKCWasmServiceHelperBaseURI = 'https://rpc.zkcross.org';
+
+export class ZKCWasmServiceHelper {
+  client = new HTTPClient({ responseType: 'json' });
+
+  constructor(public baseURI = ZKCWasmServiceHelperBaseURI) {
+    this.client.baseURI = baseURI;
+  }
+
+  static async loadWasm(wasmFile: URL, importObject = DEFAULT_IMPORT) {
+    if (!(wasmFile instanceof URL)) throw new Error('Wrong wasm file url!');
+
+    const { instance } = await WebAssembly.instantiateStreaming(
+      fetch(wasmFile),
+      importObject
+    );
+
+    if (!(instance instanceof WebAssembly.Instance))
+      throw new Error('Load wasm failed!');
+
+    return instance;
+  }
+
+  /**
+   * Upload wasm file
+   * @param applicationData upload information
+   * @returns application detail
+   */
+  createApplication(applicationData: CreateApplicationParams) {
+    return this.client.post('application', makeFormData(applicationData));
   }
 
   /**
@@ -21,22 +71,16 @@ export class ZKCWasmServiceHelper {
    * @param query request parameter
    * @returns task list
    */
-  loadTasks(query: LoadTasksQueryParams) {
-    return this.endpoint.invokeRequest<
-      HelperRequestType<LoadTasksResultData[]>
-    >(EndpointMethod.GET, `/task`, query);
+  loadTasks(query: TaskListQueryParams) {
+    return this.client.get<Task[]>(`task?${buildURLData(query)}`);
   }
 
   /**
-   * Add task request.
+   * create a task to prove the inputs, upload the proof to the chain.
    * @param task task information
-   * @returns task id and image id
+   * @returns task status and application detail
    */
-  addProvingTask(task: WithSignature<AddProvingTaskParams>) {
-    return this.endpoint.invokeRequest<AddProvingTaskResultData>(
-      EndpointMethod.POST,
-      '/task/proof',
-      task
-    );
+  addProvingTask(task: WithSignature<CreateTaskParams>) {
+    return this.client.post<ProofDetail>('task/proof', task);
   }
 }

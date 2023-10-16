@@ -1,7 +1,7 @@
 import {
   EndpointMethod,
-  QueryParamsTaskStatusEnum,
-  QueryParamsTaskTypeEnum,
+  TaskStatusEnum,
+  TaskTypeEnum,
   ZKCWasmServiceEndpoint,
   ZKCWasmServiceHelper
 } from '../../src';
@@ -79,8 +79,8 @@ describe('ZKCWasmServiceHelper class', () => {
     it('call with tasktype, taskstatus, start, total', async () => {
       expect.assertions(4);
       const fakerQuery = {
-        tasktype: QueryParamsTaskTypeEnum.BATCH,
-        taskstatus: QueryParamsTaskStatusEnum.DONE,
+        tasktype: TaskTypeEnum.BATCH,
+        taskstatus: TaskStatusEnum.DONE,
         start: 0,
         total: fakerDataTotal()
       };
