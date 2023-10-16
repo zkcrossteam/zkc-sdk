@@ -1,24 +1,27 @@
+export type InitWasm = (
+  importObject: WebAssembly.Imports
+) => Promise<WebAssembly.WebAssemblyInstantiatedSource>;
+
 export type IDType = Record<'id', string>;
+
+export type BaseType = IDType & Record<'createdAt' | 'updatedAt', string>;
 
 export type MD5Type = Record<'md5', string>;
 
 export type UserAddressType = Record<'user_address', string>;
 
-export type PageParameters = Record<'pageIndex' | 'pageSize', number>;
+export type PaginationParameters = Record<'pageIndex' | 'pageSize', number>;
 
-export type PublicPrivateInputs = Record<
-  'public_inputs' | 'private_inputs',
-  string[]
->;
+export type ZKCInputs = Record<'public_inputs' | 'private_inputs', string[]>;
 
 export type WithSignature<T> = T & { signature: string };
 
-export type HelperRequestType<T> = {
-  list: T;
+export type PageData<T extends BaseType> = {
+  list: T[];
   count: number;
 };
 
-export enum QueryParamsTaskStatusEnum {
+export enum TaskStatusEnum {
   PENDING = `Pending`,
   PROCESSING = `Processing`,
   DONE = `Done`,
@@ -26,7 +29,7 @@ export enum QueryParamsTaskStatusEnum {
   STALE = `Stale`
 }
 
-export enum QueryParamsTaskTypeEnum {
+export enum TaskTypeEnum {
   SETUP = `Setup`,
   PROVE = `Prove`,
   VERIFY = `Verify`,
@@ -35,17 +38,24 @@ export enum QueryParamsTaskTypeEnum {
   RESET = `Reset`
 }
 
-export type ProvingParams = UserAddressType & MD5Type & PublicPrivateInputs;
+export type CreateTaskParams = UserAddressType & ZKCInputs & MD5Type;
+export type CreateApplicationParams = WithSignature<
+  Record<'address' | 'name' | 'description', string> & {
+    data: File[];
+    chainList: number[];
+  }
+>;
 
-export interface LoadTasksQueryParams
-  extends Partial<UserAddressType & MD5Type & PageParameters> {
-  tasktype?: QueryParamsTaskTypeEnum;
-  taskstatus?: QueryParamsTaskStatusEnum;
+export interface TaskListQueryParams
+  extends Partial<UserAddressType & MD5Type & PaginationParameters> {
+  tasktype?: TaskTypeEnum;
+  taskstatus?: TaskStatusEnum;
 }
 
-export interface LoadTasksResultData
-  extends UserAddressType,
-    PublicPrivateInputs,
+export interface Task
+  extends BaseType,
+    UserAddressType,
+    ZKCInputs,
     MD5Type,
     Record<'submit_time' | 'process_started' | 'process_finished', string>,
     Record<'status_message' | 'internal_message', string | null>,
@@ -53,14 +63,35 @@ export interface LoadTasksResultData
   _id: {
     $oid: string;
   };
-  status: QueryParamsTaskStatusEnum;
-  task_type: QueryParamsTaskTypeEnum;
+  status: TaskStatusEnum;
+  task_type: TaskTypeEnum;
   chain_id: number | null;
   task_fee: number[];
+  application: Application;
 }
 
-export type AddProvingTaskParams = UserAddressType &
-  PublicPrivateInputs &
-  MD5Type;
+export interface Application
+  extends BaseType,
+    MD5Type,
+    Record<
+      'rewardsAccumulated' | 'size' | 'totalRequest' | 'totalWallet',
+      number
+    >,
+    Record<
+      | 'address'
+      | 'description'
+      | 'fileName'
+      | 'icon'
+      | 'name'
+      | 'uuid'
+      | 'zkcBalance',
+      string
+    > {
+  chainList: number[];
+  type: TaskTypeEnum;
+}
 
-export type AddProvingTaskResultData = MD5Type & IDType;
+export interface ProofDetail extends CreateTaskParams {
+  application: Application;
+  status: TaskStatusEnum;
+}

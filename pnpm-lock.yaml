@@ -1,5 +1,9 @@
 lockfileVersion: '6.0'
 
+settings:
+  autoInstallPeers: true
+  excludeLinksFromLockfile: false
+
 dependencies:
   '@metamask/providers':
     specifier: ^11.1.0
@@ -8,11 +12,11 @@ dependencies:
     specifier: ^5.7.2
     version: 5.7.2
   koajax:
-    specifier: ^0.8.4
-    version: 0.8.4(jsdom@21.1.2)(typescript@5.1.3)
+    specifier: ^0.9.4
+    version: 0.9.4(jsdom@21.1.2)(typescript@5.1.3)
   web-utility:
-    specifier: ^4.0.0
-    version: 4.0.0(typescript@5.1.3)
+    specifier: ^4.1.3
+    version: 4.1.3(typescript@5.1.3)
 
 devDependencies:
   '@ethersproject/abstract-provider':
@@ -2118,7 +2122,6 @@ packages:
     resolution: {integrity: sha512-sJ902EfIzn1Fa+qYmjdQqh8tPsoxyBz+8yBKC2HKUxyezKJFwPGOn7pv4WY6QuQW//ySQi5lJjA/ZT9sNWWNTg==}
     dependencies:
       tslib: 2.5.3
-    dev: true
 
   /@tootallnate/once@2.0.0:
     resolution: {integrity: sha512-XCuKFP5PS55gnMVu3dty8KPatLqUoy/ZYzDzAGCQ8JNFCkLXzmI7vNHCR+XpbZaMWQK/vQubr7PkYq8g470J/A==}
@@ -3041,8 +3044,8 @@ packages:
     resolution: {integrity: sha512-r6dCgNpRhPwiWlxbHzZQ/d9swfPaEJGi8ekqRBwQYaR3WmA5VkqQfBWSDDjuJU1ntO+W9tHx8OHV/96Q8e0dVw==}
     dev: true
 
-  /element-internals-polyfill@1.3.5:
-    resolution: {integrity: sha512-mXwGeAwECFEJso68YsQUAzXzafEywE1bnYUbcgwjPAUJUwX50ZHpI3DhRWggj/bybEslYwkmdctp+7gcY68t3g==}
+  /element-internals-polyfill@1.3.8:
+    resolution: {integrity: sha512-nymTA/NftVOlS6UjLCL8lKUm8MEgt6TXntQqGGKt+er4dzS9eU88zaGUHLTYVgdfifQ8JQFGbQERMvxse5GMrA==}
     dev: false
 
   /elliptic@6.5.4:
@@ -4438,16 +4441,16 @@ packages:
     engines: {node: '>=6'}
     dev: true
 
-  /koajax@0.8.4(jsdom@21.1.2)(typescript@5.1.3):
-    resolution: {integrity: sha512-U7u2abdz0LypPTsPYDh7isO1GWmu9buTv8JQlCy0lrd8p7xbmOXx/EjZXWaYLSJx2clnJtmyNGQJgcHbCFBgww==}
+  /koajax@0.9.4(jsdom@21.1.2)(typescript@5.1.3):
+    resolution: {integrity: sha512-uwS2ggrzcZ3KkO0MST8rVdFwT2McwnmxPc9DiiWibjnb4Zcl25YeupGkcNd226hhHp9FJYm5QjHAruL8NZ97qg==}
     peerDependencies:
-      jsdom: ^21.0.0
+      jsdom: '>=21'
     dependencies:
-      '@swc/helpers': 0.4.14
+      '@swc/helpers': 0.5.1
       iterable-observer: 1.0.0
       jsdom: 21.1.2
-      regenerator-runtime: 0.13.11
-      web-utility: 4.0.0(typescript@5.1.3)
+      regenerator-runtime: 0.14.0
+      web-utility: 4.1.3(typescript@5.1.3)
     transitivePeerDependencies:
       - typescript
     dev: false
@@ -4827,6 +4830,7 @@ packages:
   /node-gyp-build-optional-packages@5.0.7:
     resolution: {integrity: sha512-YlCCc6Wffkx0kHkmam79GKvDQ6x+QZkMjFGrIMxgFNILFvGSbCp2fCBC55pGTT9gVaz8Na5CLmxt/urtzRv36w==}
     hasBin: true
+    requiresBuild: true
     dev: true
     optional: true
 
@@ -5205,6 +5209,11 @@ packages:
 
   /regenerator-runtime@0.13.11:
     resolution: {integrity: sha512-kY1AZVr2Ra+t+piVaJ4gxaFaReZVH40AKNo7UCX6W+dEwBo/2oZJzqfuN1qLq1oL45o56cPaTXELwrTh8Fpggg==}
+    dev: true
+
+  /regenerator-runtime@0.14.0:
+    resolution: {integrity: sha512-srw17NI0TUWHuGa5CFGGmhfNIeja30WMBfbslPNhf6JrqQlLN5gcrvig1oqPxiVaXb0oW0XRKtH6Nngs5lKCIA==}
+    dev: false
 
   /require-directory@2.1.1:
     resolution: {integrity: sha512-fGxEI7+wsG9xrvdjsrlmL22OMTTiHRwAMroiEeMgq8gzoLC/PQr7RsRDSTLUg/bZAZtF+TVIkHc6/4RIKrui+Q==}
@@ -5806,14 +5815,14 @@ packages:
     resolution: {integrity: sha512-DEAoo25RfSYMuTGc9vPJzZcZullwIqRDSI9LOy+fkCJPi6hykCnfKaXTuPBDuXAUcqHXyOgFtHNp/kB2FjYHbw==}
     dev: true
 
-  /web-utility@4.0.0(typescript@5.1.3):
-    resolution: {integrity: sha512-anM4exkNbRHTXidCCkKMPxh2qAUvKQXAFQ8QH4t4sUoBddFo9fFC6i5Ga9C3HAEQviKIPr+3puMEe99YsIYoSg==}
+  /web-utility@4.1.3(typescript@5.1.3):
+    resolution: {integrity: sha512-NLk7jXW/3WKMXxr/THwRilzjjsGmK78nSZJShzcDSwmAmyzKLkG28kxSVX8hw9Eynp+dOKAjeK/CB/kLZec6rQ==}
     peerDependencies:
-      typescript: ^4.1.0
+      typescript: '>=4.1'
     dependencies:
-      '@swc/helpers': 0.4.14
-      element-internals-polyfill: 1.3.5
-      regenerator-runtime: 0.13.11
+      '@swc/helpers': 0.5.1
+      element-internals-polyfill: 1.3.8
+      regenerator-runtime: 0.14.0
       typescript: 5.1.3
     dev: false
 

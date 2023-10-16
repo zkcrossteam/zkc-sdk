@@ -1,24 +1,20 @@
 import { BlockTag, Provider } from '@ethersproject/abstract-provider';
+import { hexlify, hexStripZeros } from 'ethers/lib/utils';
 import { MetaMaskInpageProvider } from '@metamask/providers';
-import {
-  BigNumber,
-  Contract,
-  ContractInterface,
-  providers,
-  Signer,
-  utils
-} from 'ethers';
+import { Contract, ContractInterface, providers, Signer, utils } from 'ethers';
+
+import { CHAIN_INFO } from './chain';
 
 export interface ChainInfo {
-  chainId: string;
+  chainId: number;
   chainName: string;
-  nativeCurrency?: {
+  nativeCurrency: {
     name: string;
     symbol: string;
     decimals: number;
   };
   rpcUrls: string[];
-  blockExplorerUrls?: string[];
+  blockExplorerUrls: string[];
 }
 
 export interface AccountInfo {
@@ -277,34 +273,23 @@ export class ZKCWeb3MetaMaskProvider extends ZKCWeb3Provider {
     });
   }
 
-  async switchNet(chainInfo: ChainInfo) {
+  async switchNet(chainInfo = CHAIN_INFO[0]) {
     const newChainId = chainInfo.chainId;
-    const oldChainId = BigNumber.from(
-      (await this.getNetwork()).chainId
-    ).toHexString();
+    const newChainIdHexString = hexStripZeros(hexlify(newChainId));
+    const oldChainId = (await this.getNetwork()).chainId;
+
     console.log(`switch chain from ${oldChainId} to ${newChainId}`);
 
     if (oldChainId === newChainId) return;
 
     try {
-      await this.switchChain(newChainId);
+      return await this.switchChain(newChainIdHexString);
+    } catch (error) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } catch (switchError: any) {
-      if (switchError.code != 4902)
-        throw new Error(`Can not switch to chain ${newChainId}.`, {
-          cause: switchError
-        });
+      if (error.code === 4902) return this.addChain(chainInfo);
 
-      try {
-        await this.addChain(chainInfo);
-        await this.switchChain(newChainId);
-      } catch (cause) {
-        throw new Error('Add Network Rejected by User.', { cause });
-      }
+      throw error;
     }
-
-    const chainIdNum = (await this.getNetwork()).chainId;
-    console.log('switched', chainIdNum, newChainId);
   }
 
   /**
