@@ -39,12 +39,20 @@ export enum TaskTypeEnum {
 }
 
 export type CreateTaskParams = UserAddressType & ZKCInputs & MD5Type;
-export type CreateApplicationParams = WithSignature<
+export type DeployWasmApplicationParams = WithSignature<
   Record<'address' | 'name' | 'description', string> & {
     data: File[];
     chainList: number[];
   }
 >;
+
+export interface WasmApplicationListQueryParams
+  extends Record<'uuid' | 'address' | 'name' | 'website' | 'keywords', string>,
+    Partial<MD5Type & PaginationParameters> {
+  chainList: number[];
+  tasktype?: TaskTypeEnum;
+  taskstatus?: TaskStatusEnum;
+}
 
 export interface TaskListQueryParams
   extends Partial<UserAddressType & MD5Type & PaginationParameters> {
@@ -67,10 +75,10 @@ export interface Task
   task_type: TaskTypeEnum;
   chain_id: number | null;
   task_fee: number[];
-  application: Application;
+  application: WasmApplication;
 }
 
-export interface Application
+export interface WasmApplication
   extends BaseType,
     MD5Type,
     Record<
@@ -92,6 +100,6 @@ export interface Application
 }
 
 export interface ProofDetail extends CreateTaskParams {
-  application: Application;
+  application: WasmApplication;
   status: TaskStatusEnum;
 }
