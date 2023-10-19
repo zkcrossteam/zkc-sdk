@@ -3,7 +3,7 @@ import {
   TaskStatusEnum,
   TaskTypeEnum,
   ZKCWasmServiceEndpoint,
-  ZKCWasmServiceHelper
+  ZKCWasmService
 } from '../../src';
 import {
   fakerAddressFn,
@@ -30,11 +30,11 @@ jest.mock('../../src/wasmService/endpoint', () => ({
   ZKCWasmServiceEndpoint: () => fakerEndpoint
 }));
 
-let zkcWasmServiceHelper: ZKCWasmServiceHelper;
+let zkcWasmServiceHelper: ZKCWasmService;
 beforeEach(() => {
   mockServiceEndpointInvokeRequest.mockClear();
 
-  zkcWasmServiceHelper = new ZKCWasmServiceHelper(fakerBaseURI);
+  zkcWasmServiceHelper = new ZKCWasmService(fakerBaseURI);
 });
 
 describe('ZKCWasmServiceHelper class', () => {
@@ -65,7 +65,7 @@ describe('ZKCWasmServiceHelper class', () => {
       mockServiceEndpointInvokeRequest.mockResolvedValueOnce(fakerReturnValue);
       expect(mockServiceEndpointInvokeRequest).toHaveBeenCalledTimes(0);
 
-      const res = await zkcWasmServiceHelper.loadTasks(fakerQuery);
+      const res = await zkcWasmServiceHelper.getTasks(fakerQuery);
 
       expect(mockServiceEndpointInvokeRequest).toHaveBeenCalledTimes(1);
       expect(mockServiceEndpointInvokeRequest).toHaveBeenCalledWith(
@@ -92,7 +92,7 @@ describe('ZKCWasmServiceHelper class', () => {
       mockServiceEndpointInvokeRequest.mockResolvedValueOnce(fakerReturnValue);
       expect(mockServiceEndpointInvokeRequest).toHaveBeenCalledTimes(0);
 
-      const res = await zkcWasmServiceHelper.loadTasks(fakerQuery);
+      const res = await zkcWasmServiceHelper.getTasks(fakerQuery);
 
       expect(mockServiceEndpointInvokeRequest).toHaveBeenCalledTimes(1);
       expect(mockServiceEndpointInvokeRequest).toHaveBeenCalledWith(
