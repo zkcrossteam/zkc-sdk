@@ -1,8 +1,8 @@
-import { Maybe } from '@metamask/providers/dist/utils';
 import { BlockTag, Provider } from '@ethersproject/abstract-provider';
-import { hexlify, hexStripZeros } from 'ethers/lib/utils';
 import { MetaMaskInpageProvider } from '@metamask/providers';
+import { Maybe } from '@metamask/providers/dist/utils';
 import { Contract, ContractInterface, providers, Signer, utils } from 'ethers';
+import { hexlify, hexStripZeros } from 'ethers/lib/utils';
 
 import { CHAIN_INFO } from './chain';
 

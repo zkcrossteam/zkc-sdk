@@ -1,13 +1,13 @@
+import { makeFormData } from 'koajax';
 import { buildURLData } from 'web-utility';
-import { HTTPClient, makeFormData } from 'koajax';
 
+import { ZKCService } from '../service';
 import {
-  Task,
   DeployWasmApplicationParams,
-  WasmApplicationListQueryParams,
-  ProofDetail
+  ProofDetail,
+  Task,
+  WasmApplicationListQueryParams
 } from '../types';
-import { ZKCClientBaseURI } from '../constant';
 
 export const { Memory, Table } = WebAssembly;
 
@@ -37,13 +37,7 @@ export const DEFAULT_IMPORT = {
   }
 };
 
-export class ZKCWasmService {
-  client = new HTTPClient({ responseType: 'json' });
-
-  constructor(public baseURI = ZKCClientBaseURI) {
-    this.client.baseURI = baseURI;
-  }
-
+export class ZKCWasmService extends ZKCService {
   static async loadWasm<T extends WebAssembly.Exports>(
     wasmFile: URL,
     importObject = DEFAULT_IMPORT

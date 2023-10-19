@@ -1,23 +1,16 @@
-import { ChainInfo, ZKCWeb3Provider } from '../web3';
 import { buildURLData } from 'web-utility';
-import { HTTPClient } from 'koajax';
 
-import { ZKCClientBaseURI } from '../constant';
+import { ZKCService } from '../service';
 import {
   CreateTaskParams,
   ProofDetail,
-  TaskListQueryParams,
   Task,
+  TaskListQueryParams,
   WithSignature
 } from '../types';
+import { ChainInfo, ZKCWeb3Provider } from '../web3';
 
-export class ZKCProveService {
-  client = new HTTPClient({ responseType: 'json' });
-
-  constructor(public baseURI = ZKCClientBaseURI) {
-    this.client.baseURI = baseURI;
-  }
-
+export class ZKCProveService extends ZKCService {
   /**
    * create a task to prove the inputs, upload the proof to the chain.
    * @param taskInfo task information
@@ -46,20 +39,14 @@ export class ZKCProveService {
     userAddress?: string,
     chainInfo?: ChainInfo
   ) {
-    try {
-      const account = await provider.checkAccount(userAddress);
-      const user_address = account.toLowerCase();
+    const account = await provider.checkAccount(userAddress);
+    const user_address = account.toLowerCase();
 
-      await provider.switchNet(chainInfo);
+    await provider.switchNet(chainInfo);
 
-      const messageString = JSON.stringify({ user_address, ...taskInfo });
+    const messageString = JSON.stringify({ user_address, ...taskInfo });
+    const signature = await provider.sign(messageString);
 
-      const signature = await provider.sign(messageString);
-
-      return this.createOne({ ...taskInfo, signature, user_address });
-    } catch (error) {
-      console.dir(error);
-      throw error;
-    }
+    return this.createOne({ ...taskInfo, signature, user_address });
   }
 }
