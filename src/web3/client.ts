@@ -1,7 +1,8 @@
 import { BlockTag, Provider } from '@ethersproject/abstract-provider';
-import { hexlify, hexStripZeros } from 'ethers/lib/utils';
 import { MetaMaskInpageProvider } from '@metamask/providers';
+import { Maybe } from '@metamask/providers/dist/utils';
 import { Contract, ContractInterface, providers, Signer, utils } from 'ethers';
+import { hexlify, hexStripZeros } from 'ethers/lib/utils';
 
 import { CHAIN_INFO } from './chain';
 
@@ -217,13 +218,17 @@ export abstract class ZKCWeb3Provider {
   /**
    * Connect the wallet.
    */
-  abstract connect(): Promise<string>;
+  abstract connect(): Promise<string[]>;
 
   /**
    * Select Network.
    * @param chainInfo Network information
    */
-  abstract switchNet(chainInfo: ChainInfo): Promise<void>;
+  abstract switchNet<T>(chainInfo?: ChainInfo): Promise<Maybe<T>>;
+
+  abstract sign(message: string): Promise<string>;
+
+  abstract checkAccount(user_address?: string): Promise<string>;
 
   /**
    * Get the contract object with signer.
@@ -251,29 +256,27 @@ export class ZKCWeb3MetaMaskProvider extends ZKCWeb3Provider {
     return this._externalProvider;
   }
 
-  async connect() {
-    const [account] = (await this._externalProvider.request({
+  connect() {
+    return this._externalProvider.request({
       method: 'eth_requestAccounts'
-    })) as string[];
-
-    return account;
+    }) as Promise<string[]>;
   }
 
-  private switchChain(newChainIdHexString: string) {
-    return this._externalProvider.request({
+  private switchChain<T>(newChainIdHexString: string) {
+    return this._externalProvider.request<T>({
       method: 'wallet_switchEthereumChain',
       params: [{ chainId: newChainIdHexString }]
     });
   }
 
-  private addChain(chainInfo: ChainInfo) {
-    return this._externalProvider.request({
+  private addChain<T>(chainInfo: ChainInfo) {
+    return this._externalProvider.request<T>({
       method: 'wallet_addEthereumChain',
       params: [chainInfo]
     });
   }
 
-  async switchNet(chainInfo = CHAIN_INFO[0]) {
+  async switchNet<T>(chainInfo = CHAIN_INFO[0]) {
     const newChainId = chainInfo.chainId;
     const newChainIdHexString = hexStripZeros(hexlify(newChainId));
     const oldChainId = (await this.getNetwork()).chainId;
@@ -283,13 +286,23 @@ export class ZKCWeb3MetaMaskProvider extends ZKCWeb3Provider {
     if (oldChainId === newChainId) return;
 
     try {
-      return await this.switchChain(newChainIdHexString);
-    } catch (error) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if (error.code === 4902) return this.addChain(chainInfo);
+      return await this.switchChain<T>(newChainIdHexString);
+    } catch (error: any) {
+      if (error.code === 4902) return this.addChain<T>(chainInfo);
 
       throw error;
     }
+  }
+
+  async checkAccount(user_address?: string) {
+    const [account] = await this.connect();
+
+    if (!account) throw new ReferenceError('Account connect error!');
+
+    if (user_address && account.toLowerCase() !== user_address.toLowerCase())
+      throw new ReferenceError('Account insistent!');
+
+    return account;
   }
 
   /**
@@ -332,7 +345,7 @@ export class ZKCWeb3MetaMaskProvider extends ZKCWeb3Provider {
     return this._externalProvider.request<string>({
       method: 'personal_sign',
       params: [messageHexString, account]
-    });
+    }) as Promise<string>;
   }
 }
 
