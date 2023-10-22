@@ -1,6 +1,5 @@
 import { MetaMaskInpageProvider } from '@metamask/providers';
-import { ethErrors } from 'eth-rpc-errors';
-import { BigNumber, providers } from 'ethers';
+import { providers } from 'ethers';
 
 import { ZKCWeb3MetaMaskProvider } from '../../../src';
 import {
@@ -15,7 +14,7 @@ import {
 const fakerAddress = fakerAddressFn();
 const fakerChainIdNum = fakerChainIdNumFn();
 const fakerNewChainInfo = {
-  chainId: BigNumber.from(fakerChainIdNum).toHexString(),
+  chainId: fakerChainIdNum,
   chainName: fakerString20Fn(),
   nativeCurrency: {
     name: fakerString20Fn(),
@@ -82,7 +81,7 @@ describe('ZKCWeb3MetaMaskProvider class', () => {
     mockEthereumRequest.mockResolvedValueOnce([fakerAddress]);
     expect(mockEthereumRequest).toHaveBeenCalledTimes(0);
 
-    const account = await zKCWeb3MetaMaskProvider.connect();
+    const [account] = await zKCWeb3MetaMaskProvider.connect();
 
     expect(mockEthereumRequest).toHaveBeenCalledTimes(1);
     expect(mockEthereumRequest).toHaveBeenCalledWith({
@@ -110,167 +109,6 @@ describe('ZKCWeb3MetaMaskProvider class', () => {
 
       expect(mockProviderGetNetwork).toHaveBeenCalledTimes(1);
       expect(mockEthereumRequest).toHaveBeenCalledTimes(0);
-    });
-
-    it('oldChainId !== newChainId, the new network exists in the network list', async () => {
-      expect.assertions(5);
-
-      mockProviderGetNetwork.mockResolvedValueOnce({
-        chainId: fakerChainIdNum + 1
-      });
-      mockProviderGetNetwork.mockResolvedValueOnce({
-        chainId: fakerChainIdNum
-      });
-
-      expect(mockProviderGetNetwork).toHaveBeenCalledTimes(0);
-      expect(mockEthereumRequest).toHaveBeenCalledTimes(0);
-
-      await zKCWeb3MetaMaskProvider.switchNet(fakerNewChainInfo);
-
-      expect(mockProviderGetNetwork).toHaveBeenCalledTimes(2);
-      expect(mockEthereumRequest).toHaveBeenCalledTimes(1);
-      expect(mockEthereumRequest).toHaveBeenCalledWith({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: BigNumber.from(fakerChainIdNum).toHexString() }]
-      });
-    });
-
-    it('oldChainId !== newChainId, the new network does not exist in the network list', async () => {
-      expect.assertions(7);
-
-      const switchError = ethErrors.provider.custom({
-        code: 4902,
-        message: 'switchError'
-      });
-      mockProviderGetNetwork.mockResolvedValueOnce({
-        chainId: fakerChainIdNum + 1
-      });
-      mockEthereumRequest.mockRejectedValueOnce(switchError);
-      mockProviderGetNetwork.mockResolvedValueOnce({
-        chainId: fakerChainIdNum
-      });
-
-      expect(mockProviderGetNetwork).toHaveBeenCalledTimes(0);
-      expect(mockEthereumRequest).toHaveBeenCalledTimes(0);
-
-      await zKCWeb3MetaMaskProvider.switchNet(fakerNewChainInfo);
-
-      expect(mockProviderGetNetwork).toHaveBeenCalledTimes(2);
-      expect(mockEthereumRequest).toHaveBeenCalledTimes(3);
-      expect(mockEthereumRequest).toHaveBeenNthCalledWith(1, {
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: BigNumber.from(fakerChainIdNum).toHexString() }]
-      });
-      expect(mockEthereumRequest).toHaveBeenNthCalledWith(2, {
-        method: 'wallet_addEthereumChain',
-        params: [fakerNewChainInfo]
-      });
-      expect(mockEthereumRequest).toHaveBeenNthCalledWith(3, {
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: BigNumber.from(fakerChainIdNum).toHexString() }]
-      });
-    });
-
-    it('oldChainId !== newChainId, other errors occurred while switching the network', async () => {
-      expect.assertions(5);
-
-      const switchError = ethErrors.provider.custom({
-        code: 4901,
-        message: 'switchError'
-      });
-      mockProviderGetNetwork.mockResolvedValueOnce({
-        chainId: fakerChainIdNum + 1
-      });
-      mockEthereumRequest.mockRejectedValueOnce(switchError);
-
-      expect(mockProviderGetNetwork).toHaveBeenCalledTimes(0);
-      expect(mockEthereumRequest).toHaveBeenCalledTimes(0);
-
-      try {
-        await zKCWeb3MetaMaskProvider.switchNet(fakerNewChainInfo);
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
-        expect(error.message).toBe(
-          `Can not switch to chain ${fakerNewChainInfo.chainId}.`
-        );
-      }
-      expect(mockProviderGetNetwork).toHaveBeenCalledTimes(1);
-      expect(mockEthereumRequest).toHaveBeenCalledTimes(1);
-    });
-
-    it('oldChainId !== newChainId, An error occurred while adding network', async () => {
-      expect.assertions(7);
-
-      const switchError = ethErrors.provider.custom({
-        code: 4902,
-        message: 'switchError'
-      });
-      mockProviderGetNetwork.mockResolvedValueOnce({
-        chainId: fakerChainIdNum + 1
-      });
-      mockEthereumRequest.mockRejectedValueOnce(switchError);
-      mockEthereumRequest.mockRejectedValueOnce(new Error());
-
-      expect(mockProviderGetNetwork).toHaveBeenCalledTimes(0);
-      expect(mockEthereumRequest).toHaveBeenCalledTimes(0);
-
-      try {
-        await zKCWeb3MetaMaskProvider.switchNet(fakerNewChainInfo);
-      } catch (error: any) {
-        expect(error.message).toBe('Add Network Rejected by User.');
-      }
-      expect(mockProviderGetNetwork).toHaveBeenCalledTimes(1);
-      expect(mockEthereumRequest).toHaveBeenCalledTimes(2);
-      expect(mockEthereumRequest).toHaveBeenNthCalledWith(1, {
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: BigNumber.from(fakerChainIdNum).toHexString() }]
-      });
-      expect(mockEthereumRequest).toHaveBeenNthCalledWith(2, {
-        method: 'wallet_addEthereumChain',
-        params: [fakerNewChainInfo]
-      });
-    });
-
-    it('oldChainId !== newChainId, An error occurred while switching the network again', async () => {
-      expect.assertions(8);
-
-      const switchError = ethErrors.provider.custom({
-        code: 4902,
-        message: 'switchError'
-      });
-      mockProviderGetNetwork.mockResolvedValueOnce({
-        chainId: fakerChainIdNum + 1
-      });
-      mockEthereumRequest.mockRejectedValueOnce(switchError);
-      mockEthereumRequest.mockResolvedValueOnce('');
-      mockEthereumRequest.mockRejectedValueOnce(new Error());
-      mockProviderGetNetwork.mockResolvedValueOnce({
-        chainId: fakerChainIdNum
-      });
-
-      expect(mockProviderGetNetwork).toHaveBeenCalledTimes(0);
-      expect(mockEthereumRequest).toHaveBeenCalledTimes(0);
-
-      try {
-        await zKCWeb3MetaMaskProvider.switchNet(fakerNewChainInfo);
-      } catch (error: any) {
-        expect(error.message).toBe('Add Network Rejected by User.');
-      }
-
-      expect(mockProviderGetNetwork).toHaveBeenCalledTimes(1);
-      expect(mockEthereumRequest).toHaveBeenCalledTimes(3);
-      expect(mockEthereumRequest).toHaveBeenNthCalledWith(1, {
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: BigNumber.from(fakerChainIdNum).toHexString() }]
-      });
-      expect(mockEthereumRequest).toHaveBeenNthCalledWith(2, {
-        method: 'wallet_addEthereumChain',
-        params: [fakerNewChainInfo]
-      });
-      expect(mockEthereumRequest).toHaveBeenNthCalledWith(3, {
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: BigNumber.from(fakerChainIdNum).toHexString() }]
-      });
     });
   });
 

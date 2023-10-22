@@ -44,9 +44,9 @@ export class ZKCProveService extends ZKCService {
 
     await provider.switchNet(chainInfo);
 
-    const messageString = JSON.stringify({ user_address, ...taskInfo });
-    const signature = await provider.sign(messageString);
+    const data = { ...taskInfo, user_address };
+    const signature = await provider.sign(JSON.stringify(data));
 
-    return this.createOne({ ...taskInfo, signature, user_address });
+    return this.createOne({ ...data, signature });
   }
 }
