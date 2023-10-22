@@ -24,7 +24,7 @@ export const DEFAULT_IMPORT = {
       console.error('abort in wasm!');
       throw new Error('Unsupported wasm api: abort');
     },
-    require: (b: any) => {
+    require: (b: unknown) => {
       if (!b) {
         console.error('require failed');
         throw new Error('Require failed');
