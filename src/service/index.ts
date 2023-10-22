@@ -11,7 +11,9 @@ export abstract class ZKCService {
   }
 }
 
-// optimize: update to typescript 5
+/*
+ * @todo update to TypeScript 5
+ */
 export function logData(_target: any, key: string, meta: PropertyDescriptor) {
   const origin: (...data: any[]) => Promise<any> = meta.value;
 
