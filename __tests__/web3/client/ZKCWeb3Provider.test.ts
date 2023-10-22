@@ -1,14 +1,21 @@
+import { Maybe } from '@metamask/providers/dist/utils';
 import { Contract, providers } from 'ethers';
 
 import { ZKCWeb3Provider } from '../../../src';
 import { fakerAddressFn } from '../../common/faker';
 
 class ZKCWeb3ProviderTest extends ZKCWeb3Provider {
-  async connect() {
-    return '';
+  connect(): Promise<string[]> {
+    throw new Error('Method not implemented.');
   }
-  async switchNet() {
-    return;
+  switchNet<T>(): Promise<Maybe<T>> {
+    throw new Error('Method not implemented.');
+  }
+  sign(): Promise<string> {
+    throw new Error('Method not implemented.');
+  }
+  checkAccount(): Promise<string> {
+    throw new Error('Method not implemented.');
   }
 }
 
