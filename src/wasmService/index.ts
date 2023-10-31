@@ -1,7 +1,7 @@
 import { makeFormData } from 'koajax';
 import { buildURLData } from 'web-utility';
 
-import { ZKCService } from '../service';
+import { ZKCService, logData } from '../service';
 import {
   DeployWasmApplicationParams,
   ProofDetail,
@@ -60,6 +60,7 @@ export class ZKCWasmService extends ZKCService {
    * @param applicationData upload information
    * @returns application detail
    */
+  @logData
   deployWasm(applicationData: DeployWasmApplicationParams) {
     return this.client.post<ProofDetail>(
       'application',
@@ -67,6 +68,7 @@ export class ZKCWasmService extends ZKCService {
     );
   }
 
+  @logData
   getWasmApplications(query: WasmApplicationListQueryParams) {
     return this.client.get<Task[]>(`application?${buildURLData(query)}`);
   }
