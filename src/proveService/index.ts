@@ -1,4 +1,5 @@
 import { buildURLData } from 'web-utility';
+import { ZkWasmUtil } from 'zkwasm-service-helper';
 
 import { ZKCService, logData } from '../service';
 import {
@@ -52,7 +53,9 @@ export class ZKCProveService extends ZKCService {
     const { md5, public_inputs, private_inputs } = taskInfo,
       data = { user_address, md5, public_inputs, private_inputs };
 
-    const signature = await provider.sign(JSON.stringify(data));
+    const message = ZkWasmUtil.createProvingSignMessage(data);
+
+    const signature = await provider.sign(message);
 
     return this.createOne({ ...data, signature });
   }
