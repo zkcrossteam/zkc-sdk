@@ -1,7 +1,6 @@
 import { buildURLData } from 'web-utility';
-import { ZkWasmUtil } from 'zkwasm-service-helper';
 
-import { ZKCService, logData } from '../service';
+import { ZKCService } from '../service';
 import {
   CreateTaskParams,
   ProofDetail,
@@ -26,7 +25,7 @@ export class ZKCProveService extends ZKCService {
    * @param query request parameter
    * @returns task list
    */
-  @logData
+
   getList(query: TaskListQueryParams) {
     return this.client.get<Task[]>(`task?${buildURLData(query)}`);
   }
@@ -35,7 +34,7 @@ export class ZKCProveService extends ZKCService {
    * Initialize account and network, prove and deploy task
    * @param userAddress userAddress already been connected
    */
-  @logData
+
   async settlement(
     provider: ZKCWeb3Provider,
     taskInfo: Omit<CreateTaskParams, 'user_address'>,
@@ -53,7 +52,7 @@ export class ZKCProveService extends ZKCService {
     const { md5, public_inputs, private_inputs } = taskInfo,
       data = { user_address, md5, public_inputs, private_inputs };
 
-    const message = ZkWasmUtil.createProvingSignMessage(data);
+    const message = JSON.stringify(data);
 
     const signature = await provider.sign(message);
 
