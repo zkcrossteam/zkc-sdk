@@ -1,14 +1,14 @@
 import { buildURLData } from 'web-utility';
 
-import { ZKCService } from '../service';
 import {
   CreateTaskParams,
   ProofDetail,
   Task,
   TaskListQueryParams,
   WithSignature
-} from '../types';
-import { ChainInfo, ZKCWeb3Provider } from '../web3';
+} from '../../types';
+import { ChainInfo, ZKCWeb3Provider } from '../../web3';
+import { ZKCService } from '..';
 
 export class ZKCProveService extends ZKCService {
   /**
@@ -25,7 +25,6 @@ export class ZKCProveService extends ZKCService {
    * @param query request parameter
    * @returns task list
    */
-
   getList(query: TaskListQueryParams) {
     return this.client.get<Task[]>(`task?${buildURLData(query)}`);
   }
@@ -34,7 +33,6 @@ export class ZKCProveService extends ZKCService {
    * Initialize account and network, prove and deploy task
    * @param userAddress userAddress already been connected
    */
-
   async settlement(
     provider: ZKCWeb3Provider,
     taskInfo: Omit<CreateTaskParams, 'user_address'>,
@@ -46,15 +44,8 @@ export class ZKCProveService extends ZKCService {
 
     await provider.switchNet(chainInfo);
 
-    /**
-     * @todo The JSON stringify method behaves differently in different environments, we need to work with the backend to ensure the order of passing the parameters.
-     */
-    const { md5, public_inputs, private_inputs } = taskInfo,
-      data = { user_address, md5, public_inputs, private_inputs };
-
-    const message = JSON.stringify(data);
-
-    const signature = await provider.sign(message);
+    const data = { ...taskInfo, user_address };
+    const signature = await provider.sign(JSON.stringify(data));
 
     return this.createOne({ ...data, signature });
   }

@@ -1,13 +1,14 @@
 import { makeFormData } from 'koajax';
 import { buildURLData } from 'web-utility';
 
-import { ZKCService } from '../service';
 import {
   DeployWasmApplicationParams,
   ProofDetail,
   Task,
   WasmApplicationListQueryParams
-} from '../types';
+} from '../../types';
+import { ZKCService } from '..';
+import { setMemory, STATE_ENV } from '../state';
 
 export const { Memory, Table } = WebAssembly;
 
@@ -15,26 +16,25 @@ export interface InstanceExport<T extends WebAssembly.Exports> {
   exports: T;
 }
 
+export const BASE_ENV = {
+  memory: new Memory({ initial: 10, maximum: 100 }),
+  table: new Table({ initial: 0, element: 'anyfunc' }),
+  abort: () => {
+    throw new Error('Unsupported wasm api: abort');
+  },
+  require: (b: any) => {
+    console.log('Inside wasm: require call(1 means succ!)', b);
+    if (!b) throw new Error('Require failed');
+  },
+  wasm_input: () => {
+    console.error('wasm_input should not been called in non-zkwasm mode');
+    throw new Error('Unsupported wasm api: wasm_input');
+  }
+};
+
 export const DEFAULT_IMPORT = {
   global: {},
-  env: {
-    memory: new Memory({ initial: 10, maximum: 100 }),
-    table: new Table({ initial: 0, element: 'anyfunc' }),
-    abort: () => {
-      console.error('abort in wasm!');
-      throw new Error('Unsupported wasm api: abort');
-    },
-    require: (b: unknown) => {
-      if (!b) {
-        console.error('require failed');
-        throw new Error('Require failed');
-      }
-    },
-    wasm_input: () => {
-      console.error('wasm_input should not been called in non-zkwasm mode');
-      throw new Error('Unsupported wasm api: wasm_input');
-    }
-  }
+  env: { ...BASE_ENV, ...STATE_ENV }
 };
 
 export class ZKCWasmService extends ZKCService {
@@ -48,6 +48,10 @@ export class ZKCWasmService extends ZKCService {
       fetch(wasmFile),
       importObject
     );
+
+    const memory = instance.exports.memory as WebAssembly.Memory;
+
+    setMemory(memory);
 
     if (!(instance instanceof WebAssembly.Instance))
       throw new Error('Load wasm failed!');
