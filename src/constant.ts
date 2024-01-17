@@ -1,1 +1,0 @@
-export const ZKCClientBaseURI = 'https://rpc.zkcross.org';

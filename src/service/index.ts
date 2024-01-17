@@ -1,7 +1,6 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { HTTPClient } from 'koajax';
 
-import { ZKCClientBaseURI } from '../constant';
+import { ZKCClientBaseURI } from './config';
 
 export abstract class ZKCService {
   client = new HTTPClient({ responseType: 'json' });
@@ -11,7 +10,7 @@ export abstract class ZKCService {
   }
 }
 
-export function logData(_target: any, key: string, meta: PropertyDescriptor) {
+export function logData(target: any, key: string, meta: PropertyDescriptor) {
   const origin: (...data: any[]) => Promise<any> = meta.value;
 
   meta.value = async function (...data: any[]) {

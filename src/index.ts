@@ -1,5 +1,4 @@
-export * from './proveService';
-export * from './service';
+export * from './service/prove';
+export * from './service/wasm';
 export * from './types';
-export * from './wasmService';
 export * from './web3';
