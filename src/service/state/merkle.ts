@@ -1,7 +1,9 @@
+import JSBI from 'jsbi';
 import { HTTPClient } from 'koajax';
 
 import { ZKCStateURI } from '../config';
 
+const { add, subtract, BigInt, leftShift, signedRightShift, bitwiseAnd } = JSBI;
 /**
  * Merkle tree
  * 0
@@ -11,7 +13,7 @@ import { ZKCStateURI } from '../config';
  *   ...
  * 2^32-1 2^32 ... 2^33-2
  */
-export const MERKLE_TREE_HEIGHT = 32n;
+export const MERKLE_TREE_HEIGHT = BigInt(32);
 
 export enum Mode {
   FETCH,
@@ -46,39 +48,39 @@ export class ZKState {
   /**
    * Data returned from merkle_getroot, the root hash of a Merkle tree, [u64; 4]
    */
-  private _root_hash: bigint[] = [];
+  private _root_hash: JSBI[] = [];
 
   /**
    * merkle_setroot takes 4 u64 values
    */
-  private _root_data: bigint[] = [];
+  private _root_data: JSBI[] = [];
 
   /**
    * store or fetch hash and data fields
    */
   private _cache_mode: Mode = Mode.FETCH;
 
-  private _cache_hash: bigint[] = [];
+  private _cache_hash: JSBI[] = [];
 
-  private _cache_data: bigint[] = [];
+  private _cache_data: JSBI[] = [];
   /**
    * Data returned from merkle_get, the hash of some leaf data, [u64; 4]
    */
-  private _leaf_hash: bigint[] = [];
+  private _leaf_hash: JSBI[] = [];
 
   /**
    * Data passed to poseidon_push, array of finite field elements
    */
-  private _poseidon_buffer: bigint[] = [];
+  private _poseidon_buffer: JSBI[] = [];
   /**
    * Data returned from poseidon_finalize, poseidon hash result, [u64; 4]
    */
-  private _poseidon_results: bigint[] = [];
+  private _poseidon_results: JSBI[] = [];
 
   /**
    * Convert bigint array to base64 string in little endian order
    */
-  binaryArrayToBase64(bigintArray: bigint[]) {
+  binaryArrayToBase64(bigintArray: JSBI[]) {
     return btoa(
       // Convert each BigInt to little-endian bytes and push them to the array
       bigintArray.reduce(
@@ -86,7 +88,12 @@ export class ZKState {
           acc +
           String.fromCharCode(
             ...new Uint8Array(8).map((unit8, index) =>
-              Number((bigIntValue >> BigInt(index * 8)) & BigInt(0xff))
+              Number(
+                bitwiseAnd(
+                  signedRightShift(bigIntValue, BigInt(index * 8)),
+                  BigInt(0xff)
+                )
+              )
             )
           ),
         ''
@@ -103,13 +110,17 @@ export class ZKState {
     return generateBigIntArray(binaryString.length / 8).map((bigint, index) =>
       generateBigIntArray(8).reduce(
         (acc, u64Value, currentIndex) =>
-          acc +
-          (BigInt(
-            binaryString
-              .slice(index * 8, (index + 1) * 8)
-              .charCodeAt(currentIndex)
-          ) <<
-            BigInt(currentIndex * 8)),
+          add(
+            acc,
+            leftShift(
+              BigInt(
+                binaryString
+                  .slice(index * 8, (index + 1) * 8)
+                  .charCodeAt(currentIndex)
+              ),
+              BigInt(currentIndex * 8)
+            )
+          ),
         BigInt(0)
       )
     );
@@ -141,8 +152,11 @@ export class ZKState {
    * Get merkle tree node address
    * @param value merkle tree node index
    */
-  merkle_address = (value: string | number | bigint | boolean) =>
-    (this._address = BigInt(value) + (1n << MERKLE_TREE_HEIGHT) - 1n);
+  merkle_address = (value: string | number | JSBI | boolean) =>
+    (this._address = add(
+      BigInt(value),
+      subtract(leftShift(BigInt(1), MERKLE_TREE_HEIGHT), BigInt(1))
+    ));
 
   /**
    * Get merkle root address hash
@@ -169,7 +183,7 @@ export class ZKState {
   /**
    * Set merkle root address
    */
-  merkle_setroot = (value: bigint) => {
+  merkle_setroot = (value: JSBI) => {
     this._root_data.push(value);
 
     // merkle_setroot takes 4 u64 values and then set the root hash to this array.
@@ -207,7 +221,7 @@ export class ZKState {
   /**
    * Set data in merkle tree node
    */
-  merkle_set = (value: bigint) => {
+  merkle_set = (value: JSBI) => {
     this._leaf_hash.push(value);
     // merkle_set takes 4 u64 values and then set the leaf hash to this array.
     if (this._leaf_hash.length !== 4) return;
@@ -244,7 +258,7 @@ export class ZKState {
   /**
    * Create a mapping of data to hash, store or retrieve the corresponding data mapping
    */
-  cache_set_hash = (value: bigint) => {
+  cache_set_hash = (value: JSBI) => {
     this._cache_hash.push(value);
 
     if (this._cache_hash.length !== 4) return;
@@ -303,13 +317,13 @@ export class ZKState {
     return BigInt(this._cache_data.length);
   };
 
-  cache_store_data = (value: bigint) => {
+  cache_store_data = (value: JSBI) => {
     this._cache_data.push(value);
   };
 
   poseidon_new = () => (this._poseidon_buffer = []);
 
-  poseidon_push = (value: bigint) => this._poseidon_buffer.push(value);
+  poseidon_push = (value: JSBI) => this._poseidon_buffer.push(value);
 
   poseidon_finalize = () => {
     if (this._poseidon_results.length) return this._poseidon_results.shift();

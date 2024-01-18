@@ -8,8 +8,9 @@
     "noUnusedLocals": true,
     "strict": true,
     "strictNullChecks": true,
+    "downlevelIteration": true,
     "experimentalDecorators": true,
-    "target": "ES2020"
+    "target": "ES5"
   },
   "include": ["__tests__", "src", "globals.d.ts"]
 }
