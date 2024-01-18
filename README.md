@@ -1,6 +1,6 @@
 # zkc-sdk
 
-The zkc-sdk is a free and open-source toolkit for building zkWasm-based modular rollups.
+The zkc-sdk is a free and open-source toolkit for building zkWasm-based web application with modular rollup.
 
 It consists of the following components:
 
@@ -10,14 +10,31 @@ It consists of the following components:
 - contract proxy: Communicate with on-chain settlement rollup smart contract.
 - ...
 
-## Releasing
+# How to use zkc-sdk from a web application
 
-Deploy Application
+## Step1: Install zkc-sdk
+```
+npm install zkc-sdk
+```
+## Step2: Import ZKCWasmService from zkc-sdk
+```
+import { ZKCWasmService } from 'zkc-sdk';
+```
+## Step3: Load wasm binary image using ZKCWasmService
+```
+// Get the URL of the wasm file for initializing the WebAssembly instance.
+const helloWorldURL = new URL('./wasmsrc/c/hello-world.wasm', import.meta.url);
 
-```bash
-git checkout main
-git tag v0.4.0  # this version tag comes from ./package.json
-git push origin main --tags
+// load wasm module instance
+const { exports } = await ZKCWasmService.loadWasm(helloWorldURL);
+```
+## Step4: Call wasm function from web application
+```
+// Call the Add function export from wasm, save the result
+const addResult = exports.add(26, 26);
+
+// Set the result onto the body
+document.body.textContent = `Hello World! addResult: ${addResult}`;
 ```
 
-Publish a new release at https://github.com/zkcrossteam/zkc-sdk/releases/new, which will trigger an automated GitHub action to deploy the latest SDK version to npm.
+Check [zkc-by-example](https://github.com/zkcrossteam/zkc-by-example/blob/master/examples/hello-world/hello-world.md) for more details.
