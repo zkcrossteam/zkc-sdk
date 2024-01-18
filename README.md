@@ -37,4 +37,4 @@ const addResult = exports.add(26, 26);
 document.body.textContent = `Hello World! addResult: ${addResult}`;
 ```
 
-Check [zkc-by-example](https://github.com/zkcrossteam/zkc-by-example/blob/master/examples/hello-world/hello-world.md) for more details.
+Check [zkc-by-example](https://github.com/zkcrossteam/zkc-by-example) for more details regarding how to generating a zero knowledge proof, verifying the zkProof on-chain and use other services e.g zkc state service using the zkc-sdk.
