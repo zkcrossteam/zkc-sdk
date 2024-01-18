@@ -37,4 +37,26 @@ const addResult = exports.add(26, 26);
 document.body.textContent = `Hello World! addResult: ${addResult}`;
 ```
 
+## Full example code [index.js](https://github.com/zkcrossteam/zkc-by-example/blob/master/examples/hello-world/index.js)
+```
+import { ZKCWasmService } from 'zkc-sdk';
+
+// Get the URL of the wasm file for initializing the WebAssembly instance.
+const helloWorldURL = new URL('./wasmsrc/c/hello-world.wasm', import.meta.url);
+
+const runWasmAdd = async () => {
+  // load wasm module instance
+  const { exports } = await ZKCWasmService.loadWasm(helloWorldURL);
+
+  // Call the Add function export from wasm, save the result
+  const addResult = exports.add(26, 26);
+
+  // Set the result onto the body
+  document.body.textContent = `Hello World! addResult: ${addResult}`;
+};
+
+runWasmAdd();
+```
+
+# More information
 Check [zkc-by-example](https://github.com/zkcrossteam/zkc-by-example) for more details regarding how to generating a zero knowledge proof, verifying the zkProof on-chain and use other services e.g zkc state service using the zkc-sdk.
