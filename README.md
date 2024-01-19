@@ -26,12 +26,12 @@ import { ZKCWasmService } from 'zkc-sdk';
 const helloWorldURL = new URL('./wasmsrc/c/hello-world.wasm', import.meta.url);
 
 // load wasm module instance
-const { exports } = await ZKCWasmService.loadWasm(helloWorldURL);
+const { wasm } = await ZKCWasmService.loadWasm(helloWorldURL);
 ```
 ## Step4: Call wasm function from web application
 ```
 // Call the Add function export from wasm, save the result
-const addResult = exports.add(26, 26);
+const addResult = wasm.add(26, 26);
 
 // Set the result onto the body
 document.body.textContent = `Hello World! addResult: ${addResult}`;
@@ -46,10 +46,10 @@ const helloWorldURL = new URL('./wasmsrc/c/hello-world.wasm', import.meta.url);
 
 const runWasmAdd = async () => {
   // load wasm module instance
-  const { exports } = await ZKCWasmService.loadWasm(helloWorldURL);
+  const { wasm } = await ZKCWasmService.loadWasm(helloWorldURL);
 
   // Call the Add function export from wasm, save the result
-  const addResult = exports.add(26, 26);
+  const addResult = wasm.add(26, 26);
 
   // Set the result onto the body
   document.body.textContent = `Hello World! addResult: ${addResult}`;
