@@ -46,7 +46,9 @@ jest.mock('ethers', () => ({
   __esModule: true,
   ...jest.requireActual('ethers'),
   providers: {
-    Web3Provider: () => fakerWeb3Provider
+    Web3Provider: function () {
+      return fakerWeb3Provider;
+    }
   }
 }));
 

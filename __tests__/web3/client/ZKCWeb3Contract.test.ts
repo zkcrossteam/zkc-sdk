@@ -72,9 +72,8 @@ describe('ZKCWeb3Contract class', () => {
     it('call getPastEventsFrom()', async () => {
       expect.assertions(3);
 
-      const pastEvents = await newZKCWeb3Contract.getPastEventsFrom(
-        fakerBlockNum
-      );
+      const pastEvents =
+        await newZKCWeb3Contract.getPastEventsFrom(fakerBlockNum);
 
       expect(contractQueryFilter).toHaveBeenCalledTimes(1);
       expect(contractQueryFilter).toHaveBeenCalledWith('*', fakerBlockNum);

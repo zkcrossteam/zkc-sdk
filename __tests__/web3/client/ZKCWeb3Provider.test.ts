@@ -1,5 +1,5 @@
 import { Maybe } from '@metamask/providers/dist/utils';
-import { Contract, providers } from 'ethers';
+import { providers } from 'ethers';
 
 import { ZKCWeb3Provider } from '../../../src';
 import { fakerAddressFn } from '../../common/faker';
@@ -25,8 +25,10 @@ const fakerExternalProvider = {} as
 const fakerAddress = fakerAddressFn();
 const fakerAbi = ['function name() view returns (string)'];
 
+const ContractCalls: unknown[] = [];
+
 const mockProviderGetNetwork = jest.fn();
-const mockContractConstructor = jest.fn();
+
 const fakerWeb3Provider = {
   getNetwork: mockProviderGetNetwork
 } as unknown as providers.Web3Provider;
@@ -34,11 +36,16 @@ const fakerWeb3Provider = {
 jest.mock('ethers', () => ({
   __esModule: true,
   ...jest.requireActual('ethers'),
-  Contract: jest.fn().mockImplementation(() => ({
-    constructor: mockContractConstructor
-  })),
+  Contract: class MockContract {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    constructor(...data: any[]) {
+      ContractCalls.push(data);
+    }
+  },
   providers: {
-    Web3Provider: () => fakerWeb3Provider
+    Web3Provider: function () {
+      return fakerWeb3Provider;
+    }
   }
 }));
 
@@ -62,15 +69,15 @@ describe('ZKCWeb3Provider class', () => {
   });
 
   it('test getContractWithoutSigner()', () => {
-    expect(Contract).toBeCalledTimes(0);
+    expect(ContractCalls).toHaveLength(0);
     expect(
       zKCWeb3ProviderTest.getContractWithoutSigner(fakerAddress, fakerAbi)
     ).toBeTruthy();
-    expect(Contract).toBeCalledTimes(1);
-    expect(Contract).toHaveBeenCalledWith(
+    expect(ContractCalls).toHaveLength(1);
+    expect(ContractCalls[0]).toEqual([
       fakerAddress,
       fakerAbi,
       zKCWeb3ProviderTest.provider
-    );
+    ]);
   });
 });

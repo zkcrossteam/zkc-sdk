@@ -175,11 +175,11 @@ export class ZKState {
     // merkle_setroot takes 4 u64 values and then set the root hash to this array.
     if (this._root_data.length !== 4) return;
 
-    const base64 = this.binaryArrayToBase64(this._root_data);
+    const hash = this.binaryArrayToBase64(this._root_data);
 
     this._root_data = [];
 
-    return this.requestRPC('POST', 'root', JSON.stringify({ hash: base64 }));
+    return this.requestRPC('POST', 'root', JSON.stringify({ hash }));
   };
 
   /**
@@ -212,25 +212,16 @@ export class ZKState {
     // merkle_set takes 4 u64 values and then set the leaf hash to this array.
     if (this._leaf_hash.length !== 4) return;
 
-    const base64Hash = this.binaryArrayToBase64(this._leaf_hash);
+    const hash = this.binaryArrayToBase64(this._leaf_hash);
 
     console.log('In JavaScript, set index value to', this._leaf_hash);
 
-    let requestData = JSON.stringify({
-      index: this._address + '',
-      hash: base64Hash
-    });
+    let requestData = JSON.stringify({ index: this._address + '', hash });
 
     if (this._cache_data[0]) {
-      const base64Data = this.binaryArrayToBase64(this._cache_data);
-
+      const data = this.binaryArrayToBase64(this._cache_data);
       console.log('In JavaScript, cache data', this._cache_data);
-
-      requestData = JSON.stringify({
-        index: this._address + '',
-        hash: base64Hash,
-        data: base64Data
-      });
+      requestData = JSON.stringify({ index: this._address + '', hash, data });
     }
 
     this.requestRPC('POST', 'leaves', requestData);
@@ -293,14 +284,9 @@ export class ZKState {
 
     this._cache_mode = Mode.STORE;
 
-    console.log(
-      'fetch success!length: ',
-      BigInt(this._cache_data.length),
-      'data:',
-      this._cache_data
-    );
-
-    return BigInt(this._cache_data.length);
+    const length = BigInt(this._cache_data.length);
+    console.log('fetch success!length: ', length, 'data:', this._cache_data);
+    return length;
   };
 
   cache_store_data = (value: bigint) => {
@@ -321,18 +307,15 @@ export class ZKState {
       base64
     );
 
-    const data = this.requestRPC(
+    const { hash } = this.requestRPC(
       'POST',
       'poseidon',
       JSON.stringify({ data: base64 })
     );
-
-    if (!data.hash) return;
-
+    if (!hash) return;
     // TODO: we may need to evict some data hashes here.
     // Otherwise the space used by this map will keep growing.
-
-    const poseidon_results_hash_array = this.base64ToBinaryArray(data.hash);
+    const poseidon_results_hash_array = this.base64ToBinaryArray(hash);
 
     this._poseidon_results.push(...poseidon_results_hash_array);
 
