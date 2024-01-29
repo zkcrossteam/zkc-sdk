@@ -29,7 +29,7 @@ export const STATE_ENV = {
     console.log('wasm_console_log: ', decoder.decode(newBuf));
   },
 
-  wasm_dbg_char: (data: any[]) =>
+  wasm_dbg_char: (data: number[]) =>
     console.log('Inside wasm, char call print', data),
   merkle_address,
   merkle_setroot,

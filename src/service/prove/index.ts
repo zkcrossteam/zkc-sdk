@@ -44,8 +44,15 @@ export class ZKCProveService extends ZKCService {
 
     await provider.switchNet(chainInfo);
 
-    const data = { ...taskInfo, user_address };
-    const signature = await provider.sign(JSON.stringify(data));
+    /**
+     * @todo The JSON stringify method behaves differently in different environments, we need to work with the backend to ensure the order of passing the parameters.
+     */
+    const { md5, public_inputs, private_inputs } = taskInfo,
+      data = { user_address, md5, public_inputs, private_inputs };
+
+    const message = JSON.stringify(data);
+
+    const signature = await provider.sign(message);
 
     return this.createOne({ ...data, signature });
   }
