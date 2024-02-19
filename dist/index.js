@@ -35,7 +35,7 @@ $parcel$export($bef25fe248bef299$exports, "ZKCProveService", () => $bef25fe248be
 
 
 const $56a7e8569c4c72cb$export$60b3abdd0b35d54 = "https://rpc.zkcross.org";
-const $56a7e8569c4c72cb$export$3730c1cd29ce7838 = "http://rpc.zkcross.org:50000/v1";
+const $56a7e8569c4c72cb$export$3730c1cd29ce7838 = "http://localhost:50000/v1";
 
 
 class $da1fff4aede411b9$export$78ab13f417f3236e {
