@@ -280,7 +280,7 @@ class $1c1d1eeaa5e85891$export$b80cfefa1a115fbe {
    * @returns respoonse text
    */ requestRPC(method, path, body) {
         const xhr = new XMLHttpRequest();
-        xhr.open(method, `${(0, $d186eb0074f63bfc$export$3730c1cd29ce7838)}/${path}`, false);
+        xhr.open(method, `${this.client.baseURI}/${path}`, false);
         xhr.send(body);
         if (xhr.status === 200) return JSON.parse(xhr.responseText);
         throw new Error(`Request failed with status code: ${xhr.status}`);

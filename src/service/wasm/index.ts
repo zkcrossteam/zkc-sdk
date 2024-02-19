@@ -11,7 +11,7 @@ import {
 } from '../../types';
 import { ZKCService } from '..';
 import { ZKCClientBaseURI, ZKCStateURI } from '../config';
-import { getStateEnv,LOG_ENV, setMemory } from '../state';
+import { getStateEnv, LOG_ENV, setMemory } from '../state';
 
 export const { Memory, Table } = WebAssembly;
 export interface InstanceExport<T extends WebAssembly.Exports> {
@@ -55,6 +55,8 @@ async function instantiateStreamingWasm<T extends WebAssembly.Exports>(
   const { global, env, ...rest } = importObject;
 
   const stateEnv = getStateEnv(STATE);
+
+  console.log(service, '===================ZKC service init');
 
   const importVariable = {
     global,
