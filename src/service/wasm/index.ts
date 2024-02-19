@@ -10,7 +10,9 @@ import {
   WasmApplicationListQueryParams
 } from '../../types';
 import { ZKCService } from '..';
-import { setMemory, STATE_ENV } from '../state';
+import { ZKCClientBaseURI, ZKCStateURI } from '../config';
+import { getStateEnv,LOG_ENV, setMemory } from '../state';
+
 export const { Memory, Table } = WebAssembly;
 export interface InstanceExport<T extends WebAssembly.Exports> {
   exports: T;
@@ -28,25 +30,41 @@ export const BASE_ENV = {
   wasm_input: () => {
     console.error('wasm_input should not been called in non-zkwasm mode');
     throw new Error('Unsupported wasm api: wasm_input');
-  },
-  wasm_dbg: (a: number) => {
-    console.log('Inside wasm, dbg: ', a);
   }
 };
+
+export const SERVICE_PROVIDER = {
+  STATE: ZKCStateURI,
+  PROVE: ZKCClientBaseURI
+};
+
 export const DEFAULT_IMPORT = {
   global: {},
-  env: { ...BASE_ENV, ...STATE_ENV }
+  env: { ...BASE_ENV, ...LOG_ENV }
 };
 
 async function instantiateStreamingWasm<T extends WebAssembly.Exports>(
   wasmFile: URL,
-  importObject = DEFAULT_IMPORT
+  importObject = DEFAULT_IMPORT,
+  service = SERVICE_PROVIDER
 ) {
   if (!(wasmFile instanceof URL)) throw new Error('Wrong wasm file url!');
 
+  const { STATE } = service;
+
+  const { global, env, ...rest } = importObject;
+
+  const stateEnv = getStateEnv(STATE);
+
+  const importVariable = {
+    global,
+    env: { ...env, ...stateEnv },
+    ...rest
+  };
+
   const { instance } = await WebAssembly.instantiateStreaming(
     fetch(wasmFile),
-    importObject
+    importVariable
   );
 
   const memory = instance.exports.memory as WebAssembly.Memory;
