@@ -144,6 +144,19 @@ class $1c1d1eeaa5e85891$export$b80cfefa1a115fbe {
         this._poseidon_buffer = [];
         this._poseidon_results = [];
         this./**
+   * rpc synchronous request
+   * @param method request methd
+   * @param path path
+   * @param body request body
+   * @returns respoonse text
+   */ requestRPC = (method, path, body)=>{
+            const xhr = new XMLHttpRequest();
+            xhr.open(method, `${this.client.baseURI}/${path}`, false);
+            xhr.send(body);
+            if (xhr.status === 200) return JSON.parse(xhr.responseText);
+            throw new Error(`Request failed with status code: ${xhr.status}`);
+        };
+        this./**
    * Get merkle tree node address
    * @param value merkle tree node index
    */ merkle_address = (value)=>this._address = BigInt(value) + (1n << $1c1d1eeaa5e85891$export$338f79b4e5f23b3a) - 1n;
@@ -272,19 +285,6 @@ class $1c1d1eeaa5e85891$export$b80cfefa1a115fbe {
         const binaryString = atob(base64String);
         return $1c1d1eeaa5e85891$export$552d48455253a38d(binaryString.length / 8).map((bigint, index)=>$1c1d1eeaa5e85891$export$552d48455253a38d(8).reduce((acc, u64Value, currentIndex)=>acc + (BigInt(binaryString.slice(index * 8, (index + 1) * 8).charCodeAt(currentIndex)) << BigInt(currentIndex * 8)), BigInt(0)));
     }
-    /**
-   * rpc synchronous request
-   * @param method request methd
-   * @param path path
-   * @param body request body
-   * @returns respoonse text
-   */ requestRPC(method, path, body) {
-        const xhr = new XMLHttpRequest();
-        xhr.open(method, `${this.client.baseURI}/${path}`, false);
-        xhr.send(body);
-        if (xhr.status === 200) return JSON.parse(xhr.responseText);
-        throw new Error(`Request failed with status code: ${xhr.status}`);
-    }
 }
 
 
@@ -388,6 +388,7 @@ async function $699072c89a734c34$var$instantiateStreamingWasm(wasmFile, importOb
     const { STATE: STATE } = service;
     const { global: global, env: env, ...rest } = importObject;
     const stateEnv = (0, $07eb2404e786ab06$export$14f294da74a4bee6)(STATE);
+    console.log(service, "===================ZKC service init");
     const importVariable = {
         global: global,
         env: {

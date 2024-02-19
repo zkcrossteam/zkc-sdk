@@ -304,7 +304,7 @@ export class ZKState {
      * @param body request body
      * @returns respoonse text
      */
-    requestRPC(method: string, path: string, body?: XMLHttpRequestBodyInit | Document | null): any;
+    requestRPC: (method: string, path: string, body?: XMLHttpRequestBodyInit | Document | null) => any;
     /**
      * Get merkle tree node address
      * @param value merkle tree node index
