@@ -122,20 +122,20 @@ export class ZKState {
    * @param body request body
    * @returns respoonse text
    */
-  requestRPC(
+  requestRPC = (
     method: string,
     path: string,
     body?: XMLHttpRequestBodyInit | Document | null
-  ) {
+  ) => {
     const xhr = new XMLHttpRequest();
 
-    xhr.open(method, `${ZKCStateURI}/${path}`, false);
+    xhr.open(method, `${this.baseURI}/${path}`, false);
     xhr.send(body);
 
     if (xhr.status === 200) return JSON.parse(xhr.responseText);
 
     throw new Error(`Request failed with status code: ${xhr.status}`);
-  }
+  };
 
   /**
    * Get merkle tree node address
